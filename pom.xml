@@ -10,6 +10,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>ip-ruoter-admin</module>
+        <module>ip-router-executor-samples</module>
+        <module>ip-router-executor-samples/ip-router-sample-springboot</module>
+        <module>ip-router-core</module>
     </modules>
 
     <properties>
