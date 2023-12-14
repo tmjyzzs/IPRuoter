@@ -62,6 +62,7 @@ public class IpRouterExecutor {
 
         // todo some code need study
         // init executor-server
+        // 初始化 netty 服务器
         initEmbedServer(address, ip, port, appname, accessToken);
     }
 
@@ -79,16 +80,19 @@ public class IpRouterExecutor {
     private void initEmbedServer(String address, String ip, int port, String appname, String accessToken) throws Exception {
 
         // fill ip port
+        // 获取端口号  默认9999 校验 不合格 递减端口
         port = port>0?port: NetUtil.findAvailablePort(9999);
         ip = (ip!=null&&ip.trim().length()>0)?ip: getIp();
 
         // generate address
+        // address 通过解析ip得到
         if (address==null || address.trim().length()==0) {
             String ip_port_address = IpUtil.getIpPort(ip, port);   // registry-address：default use address to registry , otherwise use ip:port if address is null
             address = "http://{ip_port}/".replace("{ip_port}", ip_port_address);
         }
 
         // accessToken
+        // 登入的accessToken
         if (accessToken==null || accessToken.trim().length()==0) {
             logger.warn(">>>>>>>>>>> ip-router accessToken is empty. To ensure system security, please set the accessToken.");
         }

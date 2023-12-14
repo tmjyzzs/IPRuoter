@@ -1,8 +1,10 @@
 package com.thgykj.executor.core.config;
 
+import com.thgykj.router.core.executor.impl.IpRouterSpringExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -39,4 +41,18 @@ public class IpRouterConfig {
 
     @Value("${xxl.job.executor.logretentiondays}")
     private int logRetentionDays;
+
+    @Bean
+    public IpRouterSpringExecutor ipRouterSpringExecutor() {
+        IpRouterSpringExecutor ipRouterSpringExecutor = new IpRouterSpringExecutor();
+        ipRouterSpringExecutor.setAppname(appname);
+        ipRouterSpringExecutor.setPort(port);
+        ipRouterSpringExecutor.setAddress(address);
+        ipRouterSpringExecutor.setAccessToken(accessToken);
+        ipRouterSpringExecutor.setIp(ip);
+        ipRouterSpringExecutor.setLogPath(logPath);
+        ipRouterSpringExecutor.setAdminAddresses(adminAddresses);
+        ipRouterSpringExecutor.setLogRetentionDays(logRetentionDays);
+        return ipRouterSpringExecutor;
+    }
 }

@@ -37,6 +37,7 @@ public class EmbedServer {
 
     public void start(final String address, final int port, final String appname, final String accessToken) {
         executorBiz = new ExecutorBizImpl();
+        // 创建一个线程 启动的一个netty服务
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -52,13 +53,13 @@ public class EmbedServer {
                         new ThreadFactory() {
                             @Override
                             public Thread newThread(Runnable r) {
-                                return new Thread(r, "xxl-job, EmbedServer bizThreadPool-" + r.hashCode());
+                                return new Thread(r, "ip-router, EmbedServer bizThreadPool-" + r.hashCode());
                             }
                         },
                         new RejectedExecutionHandler() {
                             @Override
                             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                                throw new RuntimeException("xxl-job, EmbedServer bizThreadPool is EXHAUSTED!");
+                                throw new RuntimeException("ip-router, EmbedServer bizThreadPool is EXHAUSTED!");
                             }
                         });
                 try {
@@ -70,9 +71,13 @@ public class EmbedServer {
                                 @Override
                                 public void initChannel(SocketChannel channel) throws Exception {
                                     channel.pipeline()
+                                            // 设置心跳处理器
                                             .addLast(new IdleStateHandler(0, 0, 30 * 3, TimeUnit.SECONDS))  // beat 3N, close if idle
+                                            // 设置http解码器
                                             .addLast(new HttpServerCodec())
+                                            // http请求与响应合并器
                                             .addLast(new HttpObjectAggregator(5 * 1024 * 1024))  // merge request & reponse to FULL
+                                            // EmbedHttpServerHandler 处理实例的业务逻辑
                                             .addLast(new EmbedHttpServerHandler(executorBiz, accessToken, bizThreadPool));
                                 }
                             })
@@ -81,18 +86,20 @@ public class EmbedServer {
                     // bind
                     ChannelFuture future = bootstrap.bind(port).sync();
 
-                    logger.info(">>>>>>>>>>> xxl-job remoting server start success, nettype = {}, port = {}", EmbedServer.class, port);
+                    logger.info(">>>>>>>>>>> ip-router remoting server start success, nettype = {}, port = {}", EmbedServer.class, port);
 
                     // start registry
+                    // 启动注册中心
                     startRegistry(appname, address);
 
                     // wait util stop
+                    // 监听服务器的关闭事件，当接收关闭信号时，清理资源并退出线程。
                     future.channel().closeFuture().sync();
 
                 } catch (InterruptedException e) {
-                    logger.info(">>>>>>>>>>> xxl-job remoting server stop.");
+                    logger.info(">>>>>>>>>>> ip-router remoting server stop.");
                 } catch (Exception e) {
-                    logger.error(">>>>>>>>>>> xxl-job remoting server error.", e);
+                    logger.error(">>>>>>>>>>> ip-router remoting server error.", e);
                 } finally {
                     // stop
                     try {

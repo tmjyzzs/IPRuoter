@@ -54,7 +54,7 @@ public class NetUtil {
 
     /**
      * check port used
-     *
+     * 校验端口是否被占用 使用 new serverSocket 检查是否被占用
      * @param port
      * @return
      */
