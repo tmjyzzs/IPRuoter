@@ -21,7 +21,7 @@ public class ExecutorRegistryThread {
     private static Logger logger = LoggerFactory.getLogger(ExecutorRegistryThread.class);
 
     private static ExecutorRegistryThread instance = new ExecutorRegistryThread();
-    public static ExecutorRegistryThread getInstance(){
+    public static ExecutorRegistryThread getInstance(){    // 单例模式
         return instance;
     }
 
