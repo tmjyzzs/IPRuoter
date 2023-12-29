@@ -22,7 +22,6 @@ public class IndexController {
         HashMap<String, Object> objectObjectHashMap = new HashMap<>();
         objectObjectHashMap.put("test","hello");
         model.addAllAttributes(objectObjectHashMap);
-
         return "index";
     }
 }

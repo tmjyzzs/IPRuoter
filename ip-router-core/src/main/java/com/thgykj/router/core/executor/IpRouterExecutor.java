@@ -82,12 +82,14 @@ public class IpRouterExecutor {
         // fill ip port
         // 获取端口号  默认9999 校验 不合格 递减端口
         port = port>0?port: NetUtil.findAvailablePort(9999);
+        // 解析本机地址   ip.getIp() 获取当前机器的ip地址
         ip = (ip!=null&&ip.trim().length()>0)?ip: getIp();
 
         // generate address
         // address 通过解析ip得到
         if (address==null || address.trim().length()==0) {
             String ip_port_address = IpUtil.getIpPort(ip, port);   // registry-address：default use address to registry , otherwise use ip:port if address is null
+            // 当前机器的地址
             address = "http://{ip_port}/".replace("{ip_port}", ip_port_address);
         }
 
