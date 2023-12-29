@@ -1,9 +1,12 @@
 package com.thgykj.router.core.biz.client;
 
 import com.thgykj.router.core.biz.AdminBiz;
+import com.thgykj.router.core.biz.model.HandleCallbackParam;
 import com.thgykj.router.core.model.RegistryParam;
 import com.thgykj.router.core.model.ReturnT;
 import com.thgykj.router.core.util.XxlJobRemotingUtil;
+
+import java.util.List;
 
 /**
  * Description 远程客户端
@@ -36,5 +39,10 @@ public class AdminBizClient implements AdminBiz {
     @Override
     public ReturnT<String> registryRemove(RegistryParam registryParam) {
         return null;
+    }
+
+    @Override
+    public ReturnT<String> callback(List<HandleCallbackParam> callbackParamList) {
+        return XxlJobRemotingUtil.postBody(addressUrl+"api/callback", accessToken, timeout, callbackParamList, String.class);
     }
 }

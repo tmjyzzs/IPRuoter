@@ -1,6 +1,7 @@
 package com.thgykj.router.core.biz;
 
 import com.thgykj.router.core.model.ReturnT;
+import com.thgykj.router.core.model.TriggerParam;
 
 /**
  * Description TODO
@@ -15,4 +16,11 @@ public interface ExecutorBiz {
      * @return
      */
     public ReturnT<String> beat();
+
+    /**
+     * run
+     * @param triggerParam
+     * @return
+     */
+    public ReturnT<String> run(TriggerParam triggerParam);
 }

@@ -4,6 +4,7 @@ package com.thgykj.router.core.executor;
 import com.thgykj.router.core.biz.AdminBiz;
 import com.thgykj.router.core.biz.client.AdminBizClient;
 import com.thgykj.router.core.server.EmbedServer;
+import com.thgykj.router.core.thread.JobThread;
 import com.thgykj.router.core.util.IpUtil;
 import com.thgykj.router.core.util.NetUtil;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static com.thgykj.router.core.util.IpUtil.getIp;
 
@@ -127,6 +130,25 @@ public class IpRouterExecutor {
         embedServer.start(address, port, appname, accessToken);
     }
 
+    // ---------------------- job thread repository ----------------------
+
+    private static ConcurrentMap<Integer, JobThread> jobThreadRepository = new ConcurrentHashMap<Integer, JobThread>();  // 存放自己封装的线程
+
+
+    public static JobThread loadJobThread(int jobId){
+        return jobThreadRepository.get(jobId);
+    }
+
+    public static JobThread removeJobThread(int jobId, String removeOldReason){
+        JobThread oldJobThread = jobThreadRepository.remove(jobId);
+        if (oldJobThread != null) {
+            oldJobThread.toStop(removeOldReason);
+            oldJobThread.interrupt();
+
+            return oldJobThread;
+        }
+        return null;
+    }
 
 
 

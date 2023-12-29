@@ -3,7 +3,7 @@ package com.thgykj.router.core.server;
 import com.thgykj.router.core.biz.ExecutorBiz;
 import com.thgykj.router.core.biz.impl.ExecutorBizImpl;
 import com.thgykj.router.core.model.ReturnT;
-import com.thgykj.router.core.threadd.ExecutorRegistryThread;
+import com.thgykj.router.core.thread.ExecutorRegistryThread;
 import com.thgykj.router.core.util.GsonTool;
 import com.thgykj.router.core.util.IpRouterRemotingUtil;
 import com.thgykj.router.core.util.ThrowableUtil;

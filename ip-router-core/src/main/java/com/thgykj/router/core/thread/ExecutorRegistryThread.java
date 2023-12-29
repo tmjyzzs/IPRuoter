@@ -1,4 +1,4 @@
-package com.thgykj.router.core.threadd;
+package com.thgykj.router.core.thread;
 
 import com.thgykj.router.core.biz.AdminBiz;
 import com.thgykj.router.core.enums.RegistryConfig;
