@@ -25,6 +25,7 @@ public class XxlJobScheduler  {
         initI18n();
 
         // admin trigger pool start
+        // 初始化线程池
         JobTriggerPoolHelper.toStart();
 
         // admin registry monitor run

@@ -32,6 +32,7 @@ public class JobRegistryHelper {
 
 	public void start(){
 
+		logger.info("创建各种线程信息>>>{}");
 		// for registry or remove
 		registryOrRemoveThreadPool = new ThreadPoolExecutor(
 				2,
@@ -149,6 +150,7 @@ public class JobRegistryHelper {
 
 	public ReturnT<String> registry(RegistryParam registryParam) {
 
+		logger.info("远程注册信息>>>{}",registryParam);
 		// valid
 		if (!StringUtils.hasText(registryParam.getRegistryGroup())
 				|| !StringUtils.hasText(registryParam.getRegistryKey())
