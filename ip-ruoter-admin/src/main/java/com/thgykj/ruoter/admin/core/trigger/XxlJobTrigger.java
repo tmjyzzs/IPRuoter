@@ -52,6 +52,9 @@ public class XxlJobTrigger {
         // load data
         // 从数据库中加载job的信息   -- 在使用job之前就需要页面中添加job的信息
         XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
+        // todo
+        // 模拟数据
+//        jobInfo.
         if (jobInfo == null) {
             logger.warn(">>>>>>>>>>>> trigger fail, jobId invalid，jobId={}", jobId);
             return;

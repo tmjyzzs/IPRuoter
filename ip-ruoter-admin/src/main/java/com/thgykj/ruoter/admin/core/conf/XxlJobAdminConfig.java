@@ -6,7 +6,7 @@ import com.thgykj.ruoter.admin.dao.*;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
