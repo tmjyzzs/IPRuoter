@@ -43,7 +43,7 @@ public class ExecutorBizClient implements ExecutorBiz {
 
     @Override
     public ReturnT<String> run(TriggerParam triggerParam) {
-        // 调用post请求远程访问 netty 中的接口
+        // 调用post请求远程访问 netty 中的接口    // addressUrl 有问题
         return XxlJobRemotingUtil.postBody(addressUrl + "run", accessToken, timeout, triggerParam, String.class);
     }
 

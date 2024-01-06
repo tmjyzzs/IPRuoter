@@ -1,13 +1,14 @@
 package com.thgykj.ruoter.admin.core.router;
 
 
+import com.thgykj.ruoter.admin.core.router.strategy.ExecutorRouteFirst;
 
 /**
- * Created by xuxueli on 17/3/10.
+ * 路由策略
  */
 public enum ExecutorRouteStrategyEnum {
 
-//    FIRST("jobconf_route_first", new ExecutorRouteFirst()),
+    FIRST("jobconf_route_first", new ExecutorRouteFirst()),
 //    LAST(I18nUtil.getString("jobconf_route_last"), new ExecutorRouteLast()),
 //    ROUND(I18nUtil.getString("jobconf_route_round"), new ExecutorRouteRound()),
 //    RANDOM(I18nUtil.getString("jobconf_route_random"), new ExecutorRouteRandom()),

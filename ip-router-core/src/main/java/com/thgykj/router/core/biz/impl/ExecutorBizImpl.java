@@ -2,6 +2,7 @@ package com.thgykj.router.core.biz.impl;
 
 import com.thgykj.router.core.biz.ExecutorBiz;
 import com.thgykj.router.core.executor.IpRouterExecutor;
+import com.thgykj.router.core.glue.GlueTypeEnum;
 import com.thgykj.router.core.handler.IJobHandler;
 import com.thgykj.router.core.model.ReturnT;
 import com.thgykj.router.core.model.TriggerParam;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public class ExecutorBizImpl implements ExecutorBiz {
 
     private static Logger logger = LoggerFactory.getLogger(ExecutorBizImpl.class);
+
     @Override
     public ReturnT<String> beat() {
         return ReturnT.SUCCESS;
@@ -28,8 +30,45 @@ public class ExecutorBizImpl implements ExecutorBiz {
 
         // load old：jobHandler + jobThread
         JobThread jobThread = IpRouterExecutor.loadJobThread(triggerParam.getJobId());
-        IJobHandler jobHandler = jobThread!=null?jobThread.getHandler():null;
+        IJobHandler jobHandler = jobThread != null ? jobThread.getHandler() : null;
         String removeOldReason = null;
-        return null;
+        // valid：jobHandler + jobThread
+        // 不同的运行模式
+        GlueTypeEnum glueTypeEnum = GlueTypeEnum.match(triggerParam.getGlueType());
+        if (GlueTypeEnum.BEAN == glueTypeEnum) {
+            // new jobhandler
+            // 调用之前存入的handler进行处理
+            IJobHandler newJobHandler = IpRouterExecutor.loadJobHandler(triggerParam.getExecutorHandler());
+
+            // valid old jobThread
+            if (jobThread != null && jobHandler != newJobHandler) {
+                // change handler, need kill old thread
+                removeOldReason = "change jobhandler or glue type, and terminate the old job thread.";
+
+                jobThread = null;
+                jobHandler = null;
+            }
+
+            // valid handler
+            if (jobHandler == null) {
+                jobHandler = newJobHandler;
+                if (jobHandler == null) {
+                    return new ReturnT<String>(ReturnT.FAIL_CODE, "job handler [" + triggerParam.getExecutorHandler() + "] not found.");
+                }
+            }
+        }
+
+        // replace thread (new or exists invalid)
+        // 第一次调用，将线程信息存放起来
+        if (jobThread == null) {
+            jobThread = IpRouterExecutor.registJobThread(triggerParam.getJobId(), jobHandler, removeOldReason);
+        }
+
+        // push data to queue
+        ReturnT<String> pushResult = jobThread.pushTriggerQueue(triggerParam);
+        return pushResult;
     }
+
+
 }
+

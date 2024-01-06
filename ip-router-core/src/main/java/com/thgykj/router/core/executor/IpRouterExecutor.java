@@ -139,6 +139,21 @@ public class IpRouterExecutor {
     private static ConcurrentMap<Integer, JobThread> jobThreadRepository = new ConcurrentHashMap<Integer, JobThread>();  // 存放自己封装的线程
 
 
+    public static JobThread registJobThread(int jobId, IJobHandler handler, String removeOldReason){
+        JobThread newJobThread = new JobThread(jobId, handler);
+        // 开始执行方法   在handler中有实现thread run()
+        newJobThread.start();
+        logger.info(">>>>>>>>>>> xxl-job regist JobThread success, jobId:{}, handler:{}", new Object[]{jobId, handler});
+
+        JobThread oldJobThread = jobThreadRepository.put(jobId, newJobThread);	// putIfAbsent | oh my god, map's put method return the old value!!!
+        if (oldJobThread != null) {
+            oldJobThread.toStop(removeOldReason);
+            oldJobThread.interrupt();
+        }
+
+        return newJobThread;
+    }
+
     public static JobThread loadJobThread(int jobId){
         return jobThreadRepository.get(jobId);
     }
@@ -217,6 +232,8 @@ public class IpRouterExecutor {
         registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
 
     }
+
+
 
 
 

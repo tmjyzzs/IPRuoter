@@ -3,6 +3,7 @@ package com.thgykj.router.core.server;
 import com.thgykj.router.core.biz.ExecutorBiz;
 import com.thgykj.router.core.biz.impl.ExecutorBizImpl;
 import com.thgykj.router.core.model.ReturnT;
+import com.thgykj.router.core.model.TriggerParam;
 import com.thgykj.router.core.thread.ExecutorRegistryThread;
 import com.thgykj.router.core.util.GsonTool;
 import com.thgykj.router.core.util.IpRouterRemotingUtil;
@@ -191,9 +192,9 @@ public class EmbedServer {
 //                    case "/idleBeat":
 //                        IdleBeatParam idleBeatParam = GsonTool.fromJson(requestData, IdleBeatParam.class);
 //                        return executorBiz.idleBeat(idleBeatParam);
-//                    case "/run":
-//                        TriggerParam triggerParam = GsonTool.fromJson(requestData, TriggerParam.class);
-//                        return executorBiz.run(triggerParam);
+                    case "/run":
+                        TriggerParam triggerParam = GsonTool.fromJson(requestData, TriggerParam.class);
+                        return executorBiz.run(triggerParam);
 //                    case "/kill":
 //                        KillParam killParam = GsonTool.fromJson(requestData, KillParam.class);
 //                        return executorBiz.kill(killParam);
