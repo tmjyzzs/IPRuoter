@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Description 远程客户端
+ * 存放远程客户端的基础信息
  * DATA 2023-12-29
  *
  * @Author ttt

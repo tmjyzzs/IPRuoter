@@ -79,8 +79,9 @@ public class IpRouterExecutor {
 
 
     // ---------------------- admin-client (rpc invoker) ----------------------
-    private static List<AdminBiz> adminBizList;
+    private static List<AdminBiz> adminBizList;  //存放远程主机的信息  集合
 
+    // TODO 此处的远程主机是多个 ， 目前开发来看先满足单台设备
     private void initAdminBizList(String adminAddresses, String accessToken) throws Exception {
         if (adminAddresses!=null && adminAddresses.trim().length()>0) {
             for (String address: adminAddresses.trim().split(",")) {

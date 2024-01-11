@@ -48,7 +48,7 @@ public class ExecutorRegistryThread {
                 while (!toStop) {
                     try {
                         RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
-                        for (AdminBiz adminBiz: IpRouterExecutor.getAdminBizList()) {
+                        for (AdminBiz adminBiz: IpRouterExecutor.getAdminBizList()) {  // 获取远程主机信息的集合
                             try {
                                 ReturnT<String> registryResult = adminBiz.registry(registryParam);
                                 if (registryResult!=null && ReturnT.SUCCESS_CODE == registryResult.getCode()) {
@@ -78,33 +78,6 @@ public class ExecutorRegistryThread {
                         if (!toStop) {
                             logger.warn(">>>>>>>>>>> ip-router, executor registry thread interrupted, error msg:{}", e.getMessage());
                         }
-                    }
-                }
-
-                // registry remove
-                try {
-                    RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
-                    for (AdminBiz adminBiz: IpRouterExecutor.getAdminBizList()) {
-                        try {
-                            ReturnT<String> registryResult = adminBiz.registryRemove(registryParam);
-                            if (registryResult!=null && ReturnT.SUCCESS_CODE == registryResult.getCode()) {
-                                registryResult = ReturnT.SUCCESS;
-                                logger.info(">>>>>>>>>>> ip-router registry-remove success, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
-                                break;
-                            } else {
-                                logger.info(">>>>>>>>>>> ip-router registry-remove fail, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
-                            }
-                        } catch (Exception e) {
-                            if (!toStop) {
-                                logger.info(">>>>>>>>>>> ip-router registry-remove error, registryParam:{}", registryParam, e);
-                            }
-
-                        }
-
-                    }
-                } catch (Exception e) {
-                    if (!toStop) {
-                        logger.error(e.getMessage(), e);
                     }
                 }
                 logger.info(">>>>>>>>>>> ip-router, executor registry thread destroy.");
