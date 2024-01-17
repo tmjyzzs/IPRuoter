@@ -7,6 +7,7 @@ import com.thgykj.router.core.model.ReturnT;
 import com.thgykj.ruoter.admin.core.conf.XxlJobAdminConfig;
 import com.thgykj.ruoter.admin.core.model.XxlJobGroup;
 import com.thgykj.ruoter.admin.core.model.XxlJobRegistry;
+import com.thgykj.ruoter.admin.core.storage.RegistryStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -22,6 +23,7 @@ public class JobRegistryHelper {
 	private static Logger logger = LoggerFactory.getLogger(JobRegistryHelper.class);
 
 	private static JobRegistryHelper instance = new JobRegistryHelper();
+
 	public static JobRegistryHelper getInstance(){
 		return instance;
 	}
@@ -163,13 +165,19 @@ public class JobRegistryHelper {
 			@Override
 			public void run() {
 				// 将注册的数据存放到数据库中
-				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryUpdate(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
-				if (ret < 1) {
-					XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registrySave(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
-
-					// fresh
-					freshGroupRegistryInfo(registryParam);
-				}
+				// 修改将数据存放内存中
+				XxlJobRegistry xxlJobRegistry = new XxlJobRegistry();
+				xxlJobRegistry.setRegistryKey(registryParam.getRegistryKey());
+				xxlJobRegistry.setRegistryValue(registryParam.getRegistryValue());
+				xxlJobRegistry.setUpdateTime(new Date());
+				RegistryStorage.addXxlRegistry(xxlJobRegistry);
+//				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryUpdate(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
+//				if (ret < 1) {
+//					XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registrySave(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
+//
+//					// fresh
+//					freshGroupRegistryInfo(registryParam);
+//				}
 			}
 		});
 

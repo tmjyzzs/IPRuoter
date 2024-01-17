@@ -12,8 +12,10 @@ import com.thgykj.ruoter.admin.core.conf.XxlJobAdminConfig;
 import com.thgykj.ruoter.admin.core.model.XxlJobGroup;
 import com.thgykj.ruoter.admin.core.model.XxlJobInfo;
 import com.thgykj.ruoter.admin.core.model.XxlJobLog;
+import com.thgykj.ruoter.admin.core.model.XxlJobRegistry;
 import com.thgykj.ruoter.admin.core.router.ExecutorRouteStrategyEnum;
 import com.thgykj.ruoter.admin.core.scheduler.XxlJobScheduler;
+import com.thgykj.ruoter.admin.core.storage.RegistryStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public class XxlJobTrigger {
         // load data
         // 从数据库中加载job的信息   -- 在使用job之前就需要页面中添加job的信息
         XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
-        // todo
+        // todo 修改为从集合中获取注册信息
         // 模拟数据
 //        jobInfo.
         if (jobInfo == null) {
@@ -63,7 +65,16 @@ public class XxlJobTrigger {
             jobInfo.setExecutorParam(executorParam);
         }
         int finalFailRetryCount = failRetryCount>=0?failRetryCount:jobInfo.getExecutorFailRetryCount();
-        XxlJobGroup group = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().load(jobInfo.getJobGroup());
+        // 获取组id
+        XxlJobRegistry xxlRegistry = RegistryStorage.getXxlRegistry();
+        // 先替换掉数据库查询封装为 XxlJobGroup 对象
+        XxlJobGroup group = new XxlJobGroup();
+        if(xxlRegistry != null){
+            group.setId(xxlRegistry.getId());
+            group.setAddressList(xxlRegistry.getRegistryValue());
+
+        }
+//        XxlJobGroup group = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().load(jobInfo.getJobGroup());
 
         // cover addressList
         if (addressList!=null && addressList.trim().length()>0) {
