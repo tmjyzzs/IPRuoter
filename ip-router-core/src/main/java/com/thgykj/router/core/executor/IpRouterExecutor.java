@@ -137,16 +137,16 @@ public class IpRouterExecutor {
 
     // ---------------------- job thread repository ----------------------
 
-    private static ConcurrentMap<Integer, JobThread> jobThreadRepository = new ConcurrentHashMap<Integer, JobThread>();  // 存放自己封装的线程
+    private static ConcurrentMap<String, JobThread> jobThreadRepository = new ConcurrentHashMap<String, JobThread>();  // 存放自己封装的线程
 
 
-    public static JobThread registJobThread(int jobId, IJobHandler handler, String removeOldReason){
-        JobThread newJobThread = new JobThread(jobId, handler);
+    public static JobThread registJobThread(String handlerKey, IJobHandler handler, String removeOldReason){
+        JobThread newJobThread = new JobThread(handlerKey, handler);
         // 开始执行方法   在handler中有实现thread run()
         newJobThread.start();
-        logger.info(">>>>>>>>>>> xxl-job regist JobThread success, jobId:{}, handler:{}", new Object[]{jobId, handler});
+        logger.info(">>>>>>>>>>> xxl-job regist JobThread success, jobId:{}, handler:{}", new Object[]{handlerKey, handler});
 
-        JobThread oldJobThread = jobThreadRepository.put(jobId, newJobThread);	// putIfAbsent | oh my god, map's put method return the old value!!!
+        JobThread oldJobThread = jobThreadRepository.put(handlerKey, newJobThread);	// putIfAbsent | oh my god, map's put method return the old value!!!
         if (oldJobThread != null) {
             oldJobThread.toStop(removeOldReason);
             oldJobThread.interrupt();
@@ -155,12 +155,12 @@ public class IpRouterExecutor {
         return newJobThread;
     }
 
-    public static JobThread loadJobThread(int jobId){
-        return jobThreadRepository.get(jobId);
+    public static JobThread loadJobThread(String handlerKey){
+        return jobThreadRepository.get(handlerKey);
     }
 
-    public static JobThread removeJobThread(int jobId, String removeOldReason){
-        JobThread oldJobThread = jobThreadRepository.remove(jobId);
+    public static JobThread removeJobThread(String handlerKey, String removeOldReason){
+        JobThread oldJobThread = jobThreadRepository.remove(handlerKey);
         if (oldJobThread != null) {
             oldJobThread.toStop(removeOldReason);
             oldJobThread.interrupt();

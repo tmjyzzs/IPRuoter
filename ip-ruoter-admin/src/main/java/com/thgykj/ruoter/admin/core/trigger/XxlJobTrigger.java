@@ -2,10 +2,8 @@ package com.thgykj.ruoter.admin.core.trigger;
 
 
 import com.thgykj.router.core.biz.ExecutorBiz;
-import com.thgykj.router.core.enums.ExecutorBlockStrategyEnum;
 import com.thgykj.router.core.model.ReturnT;
 import com.thgykj.router.core.model.TriggerParam;
-import com.thgykj.router.core.util.IpUtil;
 import com.thgykj.router.core.util.ThrowableUtil;
 import com.thgykj.ruoter.admin.core.conf.XxlJobAdminConfig;
 
@@ -53,7 +51,11 @@ public class XxlJobTrigger {
 
         // load data
         // 从数据库中加载job的信息   -- 在使用job之前就需要页面中添加job的信息
-        XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
+//        XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
+//         模拟数据库的参数加载
+        XxlJobInfo jobInfo = new XxlJobInfo();
+        jobInfo.setExecutorHandler("demoJobHandler");
+
         // todo 修改为从集合中获取注册信息
         // 模拟数据
 //        jobInfo.
@@ -64,7 +66,6 @@ public class XxlJobTrigger {
         if (executorParam != null) {
             jobInfo.setExecutorParam(executorParam);
         }
-        int finalFailRetryCount = failRetryCount>=0?failRetryCount:jobInfo.getExecutorFailRetryCount();
         // 获取组id
         XxlJobRegistry xxlRegistry = RegistryStorage.getXxlRegistry();
         // 先替换掉数据库查询封装为 XxlJobGroup 对象
@@ -92,19 +93,20 @@ public class XxlJobTrigger {
                 shardingParam[1] = Integer.valueOf(shardingArr[1]);
             }
         }
-        if (ExecutorRouteStrategyEnum.SHARDING_BROADCAST== ExecutorRouteStrategyEnum.match(jobInfo.getExecutorRouteStrategy(), null)
-                && group.getRegistryList()!=null && !group.getRegistryList().isEmpty()
-                && shardingParam==null) {
-            for (int i = 0; i < group.getRegistryList().size(); i++) {
-                processTrigger(group, jobInfo, finalFailRetryCount, triggerType, i, group.getRegistryList().size());
-            }
-        } else {
-            if (shardingParam == null) {
-                shardingParam = new int[]{0, 1};
-            }
-            // 执行任务
-            processTrigger(group, jobInfo, finalFailRetryCount, triggerType, shardingParam[0], shardingParam[1]);
-        }
+        processTrigger(group, jobInfo, 0, triggerType, 0, group.getRegistryList().size());
+//        if (ExecutorRouteStrategyEnum.SHARDING_BROADCAST== ExecutorRouteStrategyEnum.match(jobInfo.getExecutorRouteStrategy(), null)
+//                && group.getRegistryList()!=null && !group.getRegistryList().isEmpty()
+//                && shardingParam==null) {
+//            for (int i = 0; i < group.getRegistryList().size(); i++) {
+//                processTrigger(group, jobInfo, 0, triggerType, i, group.getRegistryList().size());
+//            }
+//        } else {
+//            if (shardingParam == null) {
+//                shardingParam = new int[]{0, 1};
+//            }
+//            // 执行任务
+//            processTrigger(group, jobInfo, 0, triggerType, shardingParam[0], shardingParam[1]);
+//        }
 
     }
 
@@ -127,94 +129,29 @@ public class XxlJobTrigger {
      */
     private static void processTrigger(XxlJobGroup group, XxlJobInfo jobInfo, int finalFailRetryCount, TriggerTypeEnum triggerType, int index, int total){
 
-        // param
-        ExecutorBlockStrategyEnum blockStrategy = ExecutorBlockStrategyEnum.match(jobInfo.getExecutorBlockStrategy(), ExecutorBlockStrategyEnum.SERIAL_EXECUTION);  // block strategy
-        ExecutorRouteStrategyEnum executorRouteStrategyEnum = ExecutorRouteStrategyEnum.match(jobInfo.getExecutorRouteStrategy(), null);    // route strategy
-        String shardingParam = (ExecutorRouteStrategyEnum.SHARDING_BROADCAST==executorRouteStrategyEnum)?String.valueOf(index).concat("/").concat(String.valueOf(total)):null;
-
-        // 1、save log-id
-        XxlJobLog jobLog = new XxlJobLog();
-        jobLog.setJobGroup(jobInfo.getJobGroup());
-        jobLog.setJobId(jobInfo.getId());
-        jobLog.setTriggerTime(new Date());
-//        XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().save(jobLog);
-        logger.debug(">>>>>>>>>>> xxl-job trigger start, jobId:{}", jobLog.getId());
+//        // 1、save log-id
+//        XxlJobLog jobLog = new XxlJobLog();
+//        jobLog.setJobGroup(jobInfo.getJobGroup());
+//        jobLog.setJobId(jobInfo.getId());
+//        jobLog.setTriggerTime(new Date());
+////        XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().save(jobLog);
+//        logger.debug(">>>>>>>>>>> xxl-job trigger start, jobId:{}", jobLog.getId());
 
         // 2、init trigger-param
         TriggerParam triggerParam = new TriggerParam();
-        triggerParam.setJobId(jobInfo.getId());
         triggerParam.setExecutorHandler(jobInfo.getExecutorHandler());
-        triggerParam.setExecutorParams(jobInfo.getExecutorParam());
-        triggerParam.setExecutorBlockStrategy(jobInfo.getExecutorBlockStrategy());
-        triggerParam.setExecutorTimeout(jobInfo.getExecutorTimeout());
-        triggerParam.setLogId(jobLog.getId());
-        triggerParam.setLogDateTime(jobLog.getTriggerTime().getTime());
-        triggerParam.setGlueType(jobInfo.getGlueType());
-        triggerParam.setGlueSource(jobInfo.getGlueSource());
-        triggerParam.setGlueUpdatetime(jobInfo.getGlueUpdatetime().getTime());
+//        triggerParam.setExecutorParams(jobInfo.getExecutorParam());
+//        triggerParam.setExecutorBlockStrategy(jobInfo.getExecutorBlockStrategy());
+//        triggerParam.setExecutorTimeout(jobInfo.getExecutorTimeout());
+//        triggerParam.setGlueType(jobInfo.getGlueType());
+//        triggerParam.setGlueSource(jobInfo.getGlueSource());
         triggerParam.setBroadcastIndex(index);
         triggerParam.setBroadcastTotal(total);
 
         // 3、init address
         // 获取远程调用的接口
-        String address = null;
-        ReturnT<String> routeAddressResult = null;
-        if (group.getRegistryList()!=null && !group.getRegistryList().isEmpty()) {
-            if (ExecutorRouteStrategyEnum.SHARDING_BROADCAST == executorRouteStrategyEnum) {
-                if (index < group.getRegistryList().size()) {
-                    address = group.getRegistryList().get(index);
-                } else {
-                    address = group.getRegistryList().get(0);
-                }
-            } else {
-                routeAddressResult = executorRouteStrategyEnum.getRouter().route(triggerParam, group.getRegistryList());
-                if (routeAddressResult.getCode() == ReturnT.SUCCESS_CODE) {
-                    address = routeAddressResult.getContent();
-                }
-            }
-        } else {
-            routeAddressResult = new ReturnT<String>(ReturnT.FAIL_CODE, "jobconf_trigger_address_empty");
-        }
-
-        // 4、trigger remote executor
-        ReturnT<String> triggerResult = null;
-        if (address != null) {
-            //   正式调用
-            triggerResult = runExecutor(triggerParam, address);
-        } else {
-            triggerResult = new ReturnT<String>(ReturnT.FAIL_CODE, null);
-        }
-
-        // 5、collection trigger info
-        StringBuffer triggerMsgSb = new StringBuffer();
-        triggerMsgSb.append("jobconf_trigger_type").append("：").append(triggerType.getTitle());
-        triggerMsgSb.append("<br>").append("jobconf_trigger_admin_adress").append("：").append(IpUtil.getIp());
-        triggerMsgSb.append("<br>").append("jobconf_trigger_exe_regtype").append("：")
-                .append( (group.getAddressType() == 0)?"jobgroup_field_addressType_0":"jobgroup_field_addressType_1" );
-        triggerMsgSb.append("<br>").append("jobconf_trigger_exe_regaddress").append("：").append(group.getRegistryList());
-        triggerMsgSb.append("<br>").append("jobinfo_field_executorRouteStrategy").append("：").append(executorRouteStrategyEnum.getTitle());
-        if (shardingParam != null) {
-            triggerMsgSb.append("("+shardingParam+")");
-        }
-        triggerMsgSb.append("<br>").append("jobinfo_field_executorBlockStrategy").append("：").append(blockStrategy.getTitle());
-        triggerMsgSb.append("<br>").append("jobinfo_field_timeout").append("：").append(jobInfo.getExecutorTimeout());
-        triggerMsgSb.append("<br>").append("jobinfo_field_executorFailRetryCount").append("：").append(finalFailRetryCount);
-
-        triggerMsgSb.append("<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"+ "jobconf_trigger_run"+"<<<<<<<<<<< </span><br>")
-                .append((routeAddressResult!=null&&routeAddressResult.getMsg()!=null)?routeAddressResult.getMsg()+"<br><br>":"").append(triggerResult.getMsg()!=null?triggerResult.getMsg():"");
-
-        // 6、save log trigger-info
-        jobLog.setExecutorAddress(address);
-        jobLog.setExecutorHandler(jobInfo.getExecutorHandler());
-        jobLog.setExecutorParam(jobInfo.getExecutorParam());
-        jobLog.setExecutorShardingParam(shardingParam);
-        jobLog.setExecutorFailRetryCount(finalFailRetryCount);
-        //jobLog.setTriggerTime();
-        jobLog.setTriggerCode(triggerResult.getCode());
-        jobLog.setTriggerMsg(triggerMsgSb.toString());
-        XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().updateTriggerInfo(jobLog);
-
-        logger.debug(">>>>>>>>>>> xxl-job trigger end, jobId:{}", jobLog.getId());
+        String address = group.getRegistryList().get(0);
+        runExecutor(triggerParam, address);
     }
 
     /**
@@ -234,12 +171,6 @@ public class XxlJobTrigger {
             runResult = new ReturnT<String>(ReturnT.FAIL_CODE, ThrowableUtil.toString(e));
         }
 
-        StringBuffer runResultSB = new StringBuffer("jobconf_trigger_run" + "：");
-        runResultSB.append("<br>address：").append(address);
-        runResultSB.append("<br>code：").append(runResult.getCode());
-        runResultSB.append("<br>msg：").append(runResult.getMsg());
-
-        runResult.setMsg(runResultSB.toString());
         return runResult;
     }
 

@@ -28,10 +28,10 @@ import java.util.concurrent.*;
 public class JobThread extends Thread{
 	private static Logger logger = LoggerFactory.getLogger(JobThread.class);
 
-	private int jobId;
+	private String handlerKey;
 	private IJobHandler handler;
 	private LinkedBlockingQueue<TriggerParam> triggerQueue;
-	private Set<Long> triggerLogIdSet;		// avoid repeat trigger for the same TRIGGER_LOG_ID
+	private Set<String> triggerLogIdSet;		// avoid repeat trigger for the same TRIGGER_LOG_ID
 
 	private volatile boolean toStop = false;
 	private String stopReason;
@@ -40,14 +40,14 @@ public class JobThread extends Thread{
 	private int idleTimes = 0;			// idel times
 
 
-	public JobThread(int jobId, IJobHandler handler) {
-		this.jobId = jobId;
+	public JobThread(String handlerKey, IJobHandler handler) {
+		this.handlerKey = handlerKey;
 		this.handler = handler;
 		this.triggerQueue = new LinkedBlockingQueue<TriggerParam>();
-		this.triggerLogIdSet = Collections.synchronizedSet(new HashSet<Long>());
+		this.triggerLogIdSet = Collections.synchronizedSet(new HashSet<String>());
 
 		// assign job thread name
-		this.setName("xxl-job, JobThread-"+jobId+"-"+System.currentTimeMillis());
+		this.setName("xxl-job, JobThread-"+handlerKey+"-"+System.currentTimeMillis());
 	}
 	public IJobHandler getHandler() {
 		return handler;
@@ -61,12 +61,11 @@ public class JobThread extends Thread{
      */
 	public ReturnT<String> pushTriggerQueue(TriggerParam triggerParam) {
 		// avoid repeat
-		if (triggerLogIdSet.contains(triggerParam.getLogId())) {
-			logger.info(">>>>>>>>>>> repeate trigger job, logId:{}", triggerParam.getLogId());
-			return new ReturnT<String>(ReturnT.FAIL_CODE, "repeate trigger job, logId:" + triggerParam.getLogId());
+		if (triggerLogIdSet.contains(triggerParam.getExecutorHandler())) {
+			logger.info(">>>>>>>>>>> repeate trigger job, logId:{}", triggerParam.getExecutorHandler());
+			return new ReturnT<String>(ReturnT.FAIL_CODE, "repeate trigger job, logId:" + triggerParam.getExecutorHandler());
 		}
-
-		triggerLogIdSet.add(triggerParam.getLogId());
+		triggerLogIdSet.add(triggerParam.getExecutorHandler());
 		triggerQueue.add(triggerParam);
         return ReturnT.SUCCESS;
 	}
@@ -112,7 +111,7 @@ public class JobThread extends Thread{
             TriggerParam triggerParam = null;
             try {
 				// to check toStop signal, we need cycle, so wo cannot use queue.take(), instand of poll(timeout)
-				triggerParam = triggerQueue.poll(3L, TimeUnit.SECONDS);
+				triggerParam = triggerQueue.poll(1L, TimeUnit.SECONDS);
 				if (triggerParam!=null) {
 					running = true;
 					idleTimes = 0;
@@ -186,7 +185,7 @@ public class JobThread extends Thread{
 				} else {
 					if (idleTimes > 30) {
 						if(triggerQueue.size() == 0) {	// avoid concurrent trigger causes jobId-lost
-							IpRouterExecutor.removeJobThread(jobId, "excutor idel times over limit.");
+							IpRouterExecutor.removeJobThread(handlerKey, "excutor idel times over limit.");
 						}
 					}
 				}
