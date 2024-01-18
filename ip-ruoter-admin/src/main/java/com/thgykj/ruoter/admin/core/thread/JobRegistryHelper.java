@@ -60,70 +60,7 @@ public class JobRegistryHelper {
 		registryMonitorThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while (!toStop) {
-					try {
-						// auto registry group  // 获取执行器的类型    0 是自动注册     1 是 手动注册
-						List<XxlJobGroup> groupList = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().findByAddressType(0);
-						if (groupList!=null && !groupList.isEmpty()) {
 
-							// remove dead address (admin/executor)
-							List<Integer> ids = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findDead(RegistryConfig.DEAD_TIMEOUT, new Date());
-							if (ids!=null && ids.size()>0) {
-								XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().removeDead(ids);
-							}
-
-							// fresh online address (admin/executor)
-							HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>();   // 存放注册的地址
-							List<XxlJobRegistry> list = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findAll(RegistryConfig.DEAD_TIMEOUT, new Date());
-							if (list != null) {
-								for (XxlJobRegistry item: list) {
-									if (RegistryConfig.RegistType.EXECUTOR.name().equals(item.getRegistryGroup())) {
-										String appname = item.getRegistryKey();
-										List<String> registryList = appAddressMap.get(appname);
-										if (registryList == null) {
-											registryList = new ArrayList<String>();
-										}
-
-										if (!registryList.contains(item.getRegistryValue())) {
-											registryList.add(item.getRegistryValue());
-										}
-										appAddressMap.put(appname, registryList);
-									}
-								}
-							}
-
-							// fresh group address
-							for (XxlJobGroup group: groupList) {
-								List<String> registryList = appAddressMap.get(group.getAppname());
-								String addressListStr = null;
-								if (registryList!=null && !registryList.isEmpty()) {
-									Collections.sort(registryList);
-									StringBuilder addressListSB = new StringBuilder();
-									for (String item:registryList) {
-										addressListSB.append(item).append(",");
-									}
-									addressListStr = addressListSB.toString();
-									addressListStr = addressListStr.substring(0, addressListStr.length()-1);
-								}
-								group.setAddressList(addressListStr);
-								group.setUpdateTime(new Date());
-
-								XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().update(group);
-							}
-						}
-					} catch (Exception e) {
-						if (!toStop) {
-							logger.error(">>>>>>>>>>> xxl-job, job registry monitor thread error:{}", e);
-						}
-					}
-					try {
-						TimeUnit.SECONDS.sleep(RegistryConfig.BEAT_TIMEOUT);
-					} catch (InterruptedException e) {
-						if (!toStop) {
-							logger.error(">>>>>>>>>>> xxl-job, job registry monitor thread error:{}", e);
-						}
-					}
-				}
 				logger.info(">>>>>>>>>>> xxl-job, job registry monitor thread stop");
 			}
 		});
@@ -184,29 +121,7 @@ public class JobRegistryHelper {
 		return ReturnT.SUCCESS;
 	}
 
-	public ReturnT<String> registryRemove(RegistryParam registryParam) {
 
-		// valid
-		if (!StringUtils.hasText(registryParam.getRegistryGroup())
-				|| !StringUtils.hasText(registryParam.getRegistryKey())
-				|| !StringUtils.hasText(registryParam.getRegistryValue())) {
-			return new ReturnT<String>(ReturnT.FAIL_CODE, "Illegal Argument.");
-		}
-
-		// async execute
-		registryOrRemoveThreadPool.execute(new Runnable() {
-			@Override
-			public void run() {
-				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryDelete(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue());
-				if (ret > 0) {
-					// fresh
-					freshGroupRegistryInfo(registryParam);
-				}
-			}
-		});
-
-		return ReturnT.SUCCESS;
-	}
 
 	private void freshGroupRegistryInfo(RegistryParam registryParam){
 		// Under consideration, prevent affecting core tables

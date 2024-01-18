@@ -51,7 +51,6 @@ public class XxlJobTrigger {
 
         // load data
         // 从数据库中加载job的信息   -- 在使用job之前就需要页面中添加job的信息
-//        XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
 //         模拟数据库的参数加载
         XxlJobInfo jobInfo = new XxlJobInfo();
         jobInfo.setExecutorHandler("demoJobHandler");
@@ -75,48 +74,14 @@ public class XxlJobTrigger {
             group.setAddressList(xxlRegistry.getRegistryValue());
 
         }
-//        XxlJobGroup group = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().load(jobInfo.getJobGroup());
-
         // cover addressList
         if (addressList!=null && addressList.trim().length()>0) {
             group.setAddressType(1);
             group.setAddressList(addressList.trim());
         }
 
-        // sharding param
-        int[] shardingParam = null;
-        if (executorShardingParam!=null){
-            String[] shardingArr = executorShardingParam.split("/");
-            if (shardingArr.length==2 && isNumeric(shardingArr[0]) && isNumeric(shardingArr[1])) {
-                shardingParam = new int[2];
-                shardingParam[0] = Integer.valueOf(shardingArr[0]);
-                shardingParam[1] = Integer.valueOf(shardingArr[1]);
-            }
-        }
         processTrigger(group, jobInfo, 0, triggerType, 0, group.getRegistryList().size());
-//        if (ExecutorRouteStrategyEnum.SHARDING_BROADCAST== ExecutorRouteStrategyEnum.match(jobInfo.getExecutorRouteStrategy(), null)
-//                && group.getRegistryList()!=null && !group.getRegistryList().isEmpty()
-//                && shardingParam==null) {
-//            for (int i = 0; i < group.getRegistryList().size(); i++) {
-//                processTrigger(group, jobInfo, 0, triggerType, i, group.getRegistryList().size());
-//            }
-//        } else {
-//            if (shardingParam == null) {
-//                shardingParam = new int[]{0, 1};
-//            }
-//            // 执行任务
-//            processTrigger(group, jobInfo, 0, triggerType, shardingParam[0], shardingParam[1]);
-//        }
 
-    }
-
-    private static boolean isNumeric(String str){
-        try {
-            int result = Integer.valueOf(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
     }
 
     /**
@@ -129,22 +94,11 @@ public class XxlJobTrigger {
      */
     private static void processTrigger(XxlJobGroup group, XxlJobInfo jobInfo, int finalFailRetryCount, TriggerTypeEnum triggerType, int index, int total){
 
-//        // 1、save log-id
-//        XxlJobLog jobLog = new XxlJobLog();
-//        jobLog.setJobGroup(jobInfo.getJobGroup());
-//        jobLog.setJobId(jobInfo.getId());
-//        jobLog.setTriggerTime(new Date());
-////        XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().save(jobLog);
-//        logger.debug(">>>>>>>>>>> xxl-job trigger start, jobId:{}", jobLog.getId());
+
 
         // 2、init trigger-param
         TriggerParam triggerParam = new TriggerParam();
         triggerParam.setExecutorHandler(jobInfo.getExecutorHandler());
-//        triggerParam.setExecutorParams(jobInfo.getExecutorParam());
-//        triggerParam.setExecutorBlockStrategy(jobInfo.getExecutorBlockStrategy());
-//        triggerParam.setExecutorTimeout(jobInfo.getExecutorTimeout());
-//        triggerParam.setGlueType(jobInfo.getGlueType());
-//        triggerParam.setGlueSource(jobInfo.getGlueSource());
         triggerParam.setBroadcastIndex(index);
         triggerParam.setBroadcastTotal(total);
 
