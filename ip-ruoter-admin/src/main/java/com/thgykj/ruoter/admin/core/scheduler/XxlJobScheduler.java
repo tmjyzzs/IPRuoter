@@ -31,8 +31,6 @@ public class XxlJobScheduler  {
         // admin registry monitor run
         JobRegistryHelper.getInstance().start();
 
-        // start-schedule  ( depend on JobTriggerPoolHelper )
-        JobScheduleHelper.getInstance().start();
 
         logger.info(">>>>>>>>> init xxl-job admin success.");
     }
@@ -40,8 +38,6 @@ public class XxlJobScheduler  {
     
     public void destroy() throws Exception {
 
-        // stop-schedule
-        JobScheduleHelper.getInstance().toStop();
 
         // admin registry stop
         JobRegistryHelper.getInstance().toStop();

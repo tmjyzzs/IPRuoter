@@ -2,17 +2,11 @@ package com.thgykj.ruoter.admin.core.conf;
 
 import com.thgykj.ruoter.admin.core.alarm.JobAlarmer;
 import com.thgykj.ruoter.admin.core.scheduler.XxlJobScheduler;
-import com.thgykj.ruoter.admin.dao.*;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
-import javax.sql.DataSource;
-import java.util.Arrays;
-
 /**
  * xxl-job config
  *
@@ -64,15 +58,7 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
     @Value("${xxl.job.logretentiondays}")
     private int logretentiondays;
 
-    // dao, service
 
-    @Resource
-    private XxlJobInfoDao xxlJobInfoDao;
-
-
-
-    @Resource
-    private DataSource dataSource;
     @Resource
     private JobAlarmer jobAlarmer;
 
@@ -103,16 +89,6 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
             return -1;  // Limit greater than or equal to 7, otherwise close
         }
         return logretentiondays;
-    }
-
-
-    public XxlJobInfoDao getXxlJobInfoDao() {
-        return xxlJobInfoDao;
-    }
-
-
-    public DataSource getDataSource() {
-        return dataSource;
     }
 
     public JobAlarmer getJobAlarmer() {
