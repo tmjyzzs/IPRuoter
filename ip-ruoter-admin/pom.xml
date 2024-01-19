@@ -44,18 +44,18 @@
             <version>${project.parent.version}</version>
         </dependency>
 
-        <!-- mybatis-starter：mybatis + mybatis-spring + hikari（default） -->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>${mybatis-spring-boot-starter.version}</version>
-        </dependency>
-        <!-- mysql -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>${mysql-connector-j.version}</version>
-        </dependency>
+<!--        &lt;!&ndash; mybatis-starter：mybatis + mybatis-spring + hikari（default） &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.mybatis.spring.boot</groupId>-->
+<!--            <artifactId>mybatis-spring-boot-starter</artifactId>-->
+<!--            <version>${mybatis-spring-boot-starter.version}</version>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; mysql &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.mysql</groupId>-->
+<!--            <artifactId>mysql-connector-j</artifactId>-->
+<!--            <version>${mysql-connector-j.version}</version>-->
+<!--        </dependency>-->
 
     </dependencies>
 

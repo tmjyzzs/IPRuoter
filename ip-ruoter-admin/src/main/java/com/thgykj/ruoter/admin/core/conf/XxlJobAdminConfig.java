@@ -1,12 +1,10 @@
 package com.thgykj.ruoter.admin.core.conf;
 
-import com.thgykj.ruoter.admin.core.alarm.JobAlarmer;
 import com.thgykj.ruoter.admin.core.scheduler.XxlJobScheduler;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 /**
  * xxl-job config
  *
@@ -59,11 +57,6 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
     private int logretentiondays;
 
 
-    @Resource
-    private JobAlarmer jobAlarmer;
-
-
-
     public String getAccessToken() {
         return accessToken;
     }
@@ -84,15 +77,6 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
         return triggerPoolSlowMax;
     }
 
-    public int getLogretentiondays() {
-        if (logretentiondays < 7) {
-            return -1;  // Limit greater than or equal to 7, otherwise close
-        }
-        return logretentiondays;
-    }
 
-    public JobAlarmer getJobAlarmer() {
-        return jobAlarmer;
-    }
 
 }
