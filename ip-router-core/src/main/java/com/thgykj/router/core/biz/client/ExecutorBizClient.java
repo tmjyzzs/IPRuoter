@@ -2,7 +2,6 @@ package com.thgykj.router.core.biz.client;
 
 
 import com.thgykj.router.core.biz.ExecutorBiz;
-import com.thgykj.router.core.biz.model.LogResult;
 import com.thgykj.router.core.model.ReturnT;
 import com.thgykj.router.core.model.TriggerParam;
 import com.thgykj.router.core.util.XxlJobRemotingUtil;

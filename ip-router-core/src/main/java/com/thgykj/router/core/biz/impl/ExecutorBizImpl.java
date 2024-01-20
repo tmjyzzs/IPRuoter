@@ -2,7 +2,6 @@ package com.thgykj.router.core.biz.impl;
 
 import com.thgykj.router.core.biz.ExecutorBiz;
 import com.thgykj.router.core.executor.IpRouterExecutor;
-import com.thgykj.router.core.glue.GlueTypeEnum;
 import com.thgykj.router.core.handler.IJobHandler;
 import com.thgykj.router.core.model.ReturnT;
 import com.thgykj.router.core.model.TriggerParam;
