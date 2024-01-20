@@ -29,7 +29,6 @@ public class IpRouterSpringExecutor extends IpRouterExecutor implements Applicat
     @Override
     public void destroy() throws Exception {
         // 关于 任务销毁
-//        super.destroy();
     }
 
     @Override
@@ -104,6 +103,4 @@ public class IpRouterSpringExecutor extends IpRouterExecutor implements Applicat
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         IpRouterSpringExecutor.applicationContext = applicationContext;
     }
-
-
 }

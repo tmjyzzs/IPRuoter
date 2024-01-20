@@ -3,7 +3,7 @@ package com.thgykj.ruoter.admin.core.scheduler;
 
 import com.thgykj.router.core.biz.ExecutorBiz;
 import com.thgykj.router.core.biz.client.ExecutorBizClient;
-import com.thgykj.router.core.enums.ExecutorBlockStrategyEnum;
+
 import com.thgykj.ruoter.admin.core.thread.*;
 import com.thgykj.ruoter.admin.core.conf.XxlJobAdminConfig;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class XxlJobScheduler  {
 
     public void init() throws Exception {
         // init i18n
-        initI18n();
+
 
         // admin trigger pool start
         // 初始化线程池
@@ -47,13 +47,6 @@ public class XxlJobScheduler  {
 
     }
 
-    // ---------------------- I18n ----------------------
-
-    private void initI18n(){
-        for (ExecutorBlockStrategyEnum item:ExecutorBlockStrategyEnum.values()) {
-            item.setTitle("jobconf_block_".concat(item.name()));
-        }
-    }
 
     // ---------------------- executor-client ----------------------
     private static ConcurrentMap<String, ExecutorBiz> executorBizRepository = new ConcurrentHashMap<String, ExecutorBiz>();  // 存放address地址和执行器  TODO 没有存放进来
